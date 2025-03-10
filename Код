@@ -1,0 +1,46 @@
+3import numpy as np
+import matplotlib.pyplot as plt
+from scipy.fft import fft
+
+#функция x(c листочка)
+def x(t):
+    C1 = 0
+    C2 = -169 / 17
+    C3 = -1 / 17
+    w1 = np.sqrt(2) / 2
+    w2 = w1
+    w3 = 3
+    return C1 * np.sin(w1 * t) + C2 * np.cos(w2 * t) + C3 * np.cos(w3 * t) + 10
+
+# подсчет массива омег, через формулу с лекции
+def WW(N, T):
+    W = []
+    for n in range(N):
+        W.append(2 * np.pi * n / T)
+    return W
+
+# само преобразование фурье
+def F1():
+    N = 1024 # число точек по задаче
+    T = 16 * np.pi # пооизвольный период
+    T1 = np.linspace(0, T, N) # cоздаем разбиение, на котором будем решать задачу
+    X = np.zeros(N) # создаем пустой массив
+    for i in range(N):
+        X[i] = x(T1[i]) # заполняем массив значениями
+    W = WW(N, T) # находим массив омег
+    FFT = fft(X) # преобразования фурье
+    C = abs(FFT) / N # находим коэффиценты фурье
+    i = np.argsort(C[:N//2])[-2]  # находим индексы двух наибольших пиков
+    w1_fft = W[i]
+    w1y = C[i]
+
+
+    plt.plot(W, C, color='blue') # строим спектрограмму
+    plt.scatter(w1_fft, w1y, color='red') # строим пики
+    plt.grid()
+    plt.show()
+
+    plt.plot(T1, X) # строим график решения x(t)
+    plt.show()
+
+F1() # преобразование фурье
